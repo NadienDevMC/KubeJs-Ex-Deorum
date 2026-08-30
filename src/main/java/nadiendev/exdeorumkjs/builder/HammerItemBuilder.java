@@ -3,9 +3,9 @@ package nadiendev.exdeorumkjs.builder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.custom.HandheldItemBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import thedarkcolour.exdeorum.item.HammerItem;
 import thedarkcolour.exdeorum.tag.EItemTags;
 
@@ -16,9 +16,9 @@ public class HammerItemBuilder extends HandheldItemBuilder implements ExDeorumRe
     protected transient @Nullable String material;
     protected transient String handle = "#c:rods/wooden";
 
-    public HammerItemBuilder(ResourceLocation id, ResourceLocation tag) {
+    public HammerItemBuilder(Identifier id, Identifier tag) {
         super(id, 5F, -3F);
-        tag(new ResourceLocation[]{tag});
+        tag(new Identifier[]{tag});
         ExDeorumRecipeGen.add(this);
     }
 
@@ -43,12 +43,14 @@ public class HammerItemBuilder extends HandheldItemBuilder implements ExDeorumRe
 
     @Override
     public Item createObject() {
-        itemAttributeModifiers = net.minecraft.world.item.DiggerItem.createAttributes(toolTier, attackDamageBaseline, speedBaseline);
-        return new HammerItem(toolTier, createItemProperties());
+        var props = createItemProperties();
+        var material = toolTier.build();
+        itemAttributeModifiers = createToolAttributes(material, attackDamageBaseline, speedBaseline);
+        return new HammerItem(material, props);
     }
 
     @Override
-    public void generateRecipes(Map<ResourceLocation, JsonElement> out) {
+    public void generateRecipes(Map<Identifier, JsonElement> out) {
         if (material == null) {
             return;
         }
@@ -61,7 +63,7 @@ public class HammerItemBuilder extends HandheldItemBuilder implements ExDeorumRe
     }
 
     public static class Normal extends HammerItemBuilder {
-        public Normal(ResourceLocation id) {
+        public Normal(Identifier id) {
             super(id, EItemTags.HAMMERS.location());
         }
     }
@@ -69,7 +71,7 @@ public class HammerItemBuilder extends HandheldItemBuilder implements ExDeorumRe
     public static class Compressed extends HammerItemBuilder {
         private transient boolean generate = true;
 
-        public Compressed(ResourceLocation id) {
+        public Compressed(Identifier id) {
             super(id, EItemTags.COMPRESSED_HAMMERS.location());
         }
 
@@ -85,11 +87,11 @@ public class HammerItemBuilder extends HandheldItemBuilder implements ExDeorumRe
             }
 
             String path = id.getPath();
-            return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), path.startsWith("compressed_") ? path.substring("compressed_".length()) : path).toString();
+            return Identifier.fromNamespaceAndPath(id.getNamespace(), path.startsWith("compressed_") ? path.substring("compressed_".length()) : path).toString();
         }
 
         @Override
-        public void generateRecipes(Map<ResourceLocation, JsonElement> out) {
+        public void generateRecipes(Map<Identifier, JsonElement> out) {
             if (!generate) {
                 return;
             }

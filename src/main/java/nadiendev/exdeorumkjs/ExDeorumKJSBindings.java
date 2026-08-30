@@ -2,7 +2,7 @@ package nadiendev.exdeorumkjs;
 
 import nadiendev.exdeorumkjs.component.BlockPredicateComponent;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
@@ -29,7 +29,7 @@ public class ExDeorumKJSBindings {
     }
 
     public BlockPredicate blockTag(String tag) {
-        return BlockPredicate.blockTag(TagKey.create(Registries.BLOCK, ResourceLocation.parse(tag.startsWith("#") ? tag.substring(1) : tag)));
+        return BlockPredicate.blockTag(TagKey.create(Registries.BLOCK, Identifier.parse(tag.startsWith("#") ? tag.substring(1) : tag)));
     }
 
     public BlockPredicate blockPredicate(String value) {

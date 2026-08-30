@@ -3,9 +3,9 @@ package nadiendev.exdeorumkjs.builder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import thedarkcolour.exdeorum.item.MeshItem;
 import thedarkcolour.exdeorum.tag.EItemTags;
 
@@ -16,10 +16,10 @@ public class MeshItemBuilder extends ItemBuilder implements ExDeorumRecipeGen.So
     private transient @Nullable String material;
     private transient String binder = "#c:strings";
 
-    public MeshItemBuilder(ResourceLocation id) {
+    public MeshItemBuilder(Identifier id) {
         super(id);
         unstackable();
-        tag(new ResourceLocation[]{EItemTags.SIEVE_MESHES.location()});
+        tag(new Identifier[]{EItemTags.SIEVE_MESHES.location()});
         ExDeorumRecipeGen.add(this);
     }
 
@@ -43,7 +43,7 @@ public class MeshItemBuilder extends ItemBuilder implements ExDeorumRecipeGen.So
     }
 
     @Override
-    public void generateRecipes(Map<ResourceLocation, JsonElement> out) {
+    public void generateRecipes(Map<Identifier, JsonElement> out) {
         if (material == null) {
             return;
         }

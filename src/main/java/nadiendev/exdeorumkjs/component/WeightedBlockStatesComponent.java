@@ -11,15 +11,17 @@ import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import nadiendev.exdeorumkjs.ExDeorumKJS;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jspecify.annotations.Nullable;
 import thedarkcolour.exdeorum.recipe.RecipeUtil;
 import thedarkcolour.exdeorum.recipe.WeightedList;
 
 import java.util.Map;
 
-public record WeightedBlockStatesComponent(RecipeComponentType<?> type) implements RecipeComponent<WeightedList<BlockState>> {
-    public static final RecipeComponentType<WeightedList<BlockState>> WEIGHTED_BLOCK_STATES =
-        RecipeComponentType.unit(ExDeorumKJS.id("weighted_block_states"), WeightedBlockStatesComponent::new);
+public record WeightedBlockStatesComponent(ResourceKey<RecipeComponentType<?>> type) implements RecipeComponent<WeightedList<BlockState>> {
+    public static final WeightedBlockStatesComponent WEIGHTED_BLOCK_STATES =
+        new WeightedBlockStatesComponent(RecipeComponentType.key(ExDeorumKJS.id("weighted_block_states")));
 
     private static final Codec<WeightedList<BlockState>> CODEC =
         WeightedList.codec(Codec.STRING.xmap(RecipeUtil::parseBlockState, RecipeUtil::writeBlockState));
@@ -36,7 +38,7 @@ public record WeightedBlockStatesComponent(RecipeComponentType<?> type) implemen
 
     @Override
     @SuppressWarnings("unchecked")
-    public WeightedList<BlockState> wrap(RecipeScriptContext cx, Object from) {
+    public WeightedList<BlockState> wrap(RecipeScriptContext cx, @Nullable Object from) {
         if (from instanceof WeightedList<?> list) {
             return (WeightedList<BlockState>) list;
         }
@@ -89,6 +91,6 @@ public record WeightedBlockStatesComponent(RecipeComponentType<?> type) implemen
 
     @Override
     public String toString() {
-        return type.toString();
+        return type.identifier().toString();
     }
 }

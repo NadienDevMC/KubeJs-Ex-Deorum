@@ -1,5 +1,6 @@
 package nadiendev.exdeorumkjs.material;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import thedarkcolour.exdeorum.block.LavaCrucibleBlock;
@@ -11,7 +12,7 @@ public class KJSLavaCrucibleMaterial extends AbstractCrucibleMaterial {
     }
 
     @Override
-    protected Block createBlock() {
-        return new LavaCrucibleBlock(props().noOcclusion());
+    protected Block createBlock(Identifier id) {
+        return new LavaCrucibleBlock(props(id).noOcclusion());
     }
 }

@@ -3,8 +3,8 @@ package nadiendev.exdeorumkjs.builder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 
@@ -12,7 +12,7 @@ public class OreChunkItemBuilder extends ItemBuilder implements ExDeorumRecipeGe
     private transient @Nullable String ore;
     private transient boolean generate = true;
 
-    public OreChunkItemBuilder(ResourceLocation id) {
+    public OreChunkItemBuilder(Identifier id) {
         super(id);
         ExDeorumRecipeGen.add(this);
     }
@@ -48,7 +48,7 @@ public class OreChunkItemBuilder extends ItemBuilder implements ExDeorumRecipeGe
     }
 
     @Override
-    public void generateRecipes(Map<ResourceLocation, JsonElement> out) {
+    public void generateRecipes(Map<Identifier, JsonElement> out) {
         if (!generate) {
             return;
         }

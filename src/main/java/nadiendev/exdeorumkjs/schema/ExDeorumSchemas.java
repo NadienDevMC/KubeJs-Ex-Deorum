@@ -4,9 +4,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
 import dev.latvian.mods.kubejs.recipe.component.ComponentRole;
 import dev.latvian.mods.kubejs.recipe.component.FluidIngredientComponent;
-import dev.latvian.mods.kubejs.recipe.component.FluidStackComponent;
 import dev.latvian.mods.kubejs.recipe.component.IngredientComponent;
-import dev.latvian.mods.kubejs.recipe.component.ItemStackComponent;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
 import dev.latvian.mods.kubejs.recipe.component.SizedFluidIngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.TagKeyComponent;
@@ -15,19 +13,21 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import nadiendev.exdeorumkjs.ExDeorumKJS;
 import nadiendev.exdeorumkjs.component.BlockPredicateComponent;
 import nadiendev.exdeorumkjs.component.FluidComponent;
+import nadiendev.exdeorumkjs.component.FluidStackTemplateComponent;
+import nadiendev.exdeorumkjs.component.ItemStackTemplateComponent;
 import nadiendev.exdeorumkjs.component.NumberProviderComponent;
 import nadiendev.exdeorumkjs.component.WeightedBlockStatesComponent;
 import nadiendev.exdeorumkjs.recipe.BlockPredicateKubeRecipe;
 import nadiendev.exdeorumkjs.recipe.ProbabilityKubeRecipe;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import thedarkcolour.exdeorum.recipe.BlockPredicate;
@@ -44,7 +44,7 @@ public interface ExDeorumSchemas {
         return new KubeRecipeFactory(ExDeorumKJS.id(name), BlockPredicateKubeRecipe.class, () -> new BlockPredicateKubeRecipe(key));
     }
 
-    RecipeKey<ItemStack> SIEVE_RESULT = ItemStackComponent.ITEM_STACK.key("result", ComponentRole.OUTPUT);
+    RecipeKey<ItemStackTemplate> SIEVE_RESULT = ItemStackTemplateComponent.ITEM_STACK_TEMPLATE.key("result", ComponentRole.OUTPUT);
     RecipeKey<Ingredient> SIEVE_INGREDIENT = IngredientComponent.INGREDIENT.key("ingredient", ComponentRole.INPUT);
     RecipeKey<Ingredient> SIEVE_MESH = IngredientComponent.INGREDIENT.key("mesh", ComponentRole.INPUT);
     RecipeKey<NumberProvider> SIEVE_RESULT_AMOUNT = NumberProviderComponent.NUMBER_PROVIDER.key("result_amount", ComponentRole.OTHER).optional(ONE);
@@ -57,7 +57,7 @@ public interface ExDeorumSchemas {
         .constructor(SIEVE_RESULT, SIEVE_INGREDIENT, SIEVE_MESH, SIEVE_RESULT_AMOUNT, SIEVE_BY_HAND_ONLY)
         .uniqueId(SIEVE_RESULT);
 
-    RecipeKey<ItemStack> COMPRESSED_SIEVE_RESULT = ItemStackComponent.ITEM_STACK.key("result", ComponentRole.OUTPUT);
+    RecipeKey<ItemStackTemplate> COMPRESSED_SIEVE_RESULT = ItemStackTemplateComponent.ITEM_STACK_TEMPLATE.key("result", ComponentRole.OUTPUT);
     RecipeKey<Ingredient> COMPRESSED_SIEVE_INGREDIENT = IngredientComponent.INGREDIENT.key("ingredient", ComponentRole.INPUT);
     RecipeKey<Ingredient> COMPRESSED_SIEVE_MESH = IngredientComponent.INGREDIENT.key("mesh", ComponentRole.INPUT);
     RecipeKey<NumberProvider> COMPRESSED_SIEVE_RESULT_AMOUNT = NumberProviderComponent.NUMBER_PROVIDER.key("result_amount", ComponentRole.OTHER).optional(ONE);
@@ -70,7 +70,7 @@ public interface ExDeorumSchemas {
         .constructor(COMPRESSED_SIEVE_RESULT, COMPRESSED_SIEVE_INGREDIENT, COMPRESSED_SIEVE_MESH, COMPRESSED_SIEVE_RESULT_AMOUNT, COMPRESSED_SIEVE_BY_HAND_ONLY)
         .uniqueId(COMPRESSED_SIEVE_RESULT);
 
-    RecipeKey<ItemStack> HAMMER_RESULT = ItemStackComponent.ITEM_STACK.key("result", ComponentRole.OUTPUT);
+    RecipeKey<ItemStackTemplate> HAMMER_RESULT = ItemStackTemplateComponent.ITEM_STACK_TEMPLATE.key("result", ComponentRole.OUTPUT);
     RecipeKey<Ingredient> HAMMER_INGREDIENT = IngredientComponent.INGREDIENT.key("ingredient", ComponentRole.INPUT);
     RecipeKey<NumberProvider> HAMMER_RESULT_AMOUNT = NumberProviderComponent.NUMBER_PROVIDER.key("result_amount", ComponentRole.OTHER).optional(ONE);
 
@@ -80,7 +80,7 @@ public interface ExDeorumSchemas {
         .constructor(HAMMER_RESULT, HAMMER_INGREDIENT, HAMMER_RESULT_AMOUNT)
         .uniqueId(HAMMER_RESULT);
 
-    RecipeKey<ItemStack> COMPRESSED_HAMMER_RESULT = ItemStackComponent.ITEM_STACK.key("result", ComponentRole.OUTPUT);
+    RecipeKey<ItemStackTemplate> COMPRESSED_HAMMER_RESULT = ItemStackTemplateComponent.ITEM_STACK_TEMPLATE.key("result", ComponentRole.OUTPUT);
     RecipeKey<Ingredient> COMPRESSED_HAMMER_INGREDIENT = IngredientComponent.INGREDIENT.key("ingredient", ComponentRole.INPUT);
     RecipeKey<NumberProvider> COMPRESSED_HAMMER_RESULT_AMOUNT = NumberProviderComponent.NUMBER_PROVIDER.key("result_amount", ComponentRole.OTHER).optional(ONE);
 
@@ -90,7 +90,7 @@ public interface ExDeorumSchemas {
         .constructor(COMPRESSED_HAMMER_RESULT, COMPRESSED_HAMMER_INGREDIENT, COMPRESSED_HAMMER_RESULT_AMOUNT)
         .uniqueId(COMPRESSED_HAMMER_RESULT);
 
-    RecipeKey<ItemStack> CROOK_RESULT = ItemStackComponent.ITEM_STACK.key("result", ComponentRole.OUTPUT);
+    RecipeKey<ItemStackTemplate> CROOK_RESULT = ItemStackTemplateComponent.ITEM_STACK_TEMPLATE.key("result", ComponentRole.OUTPUT);
     RecipeKey<BlockPredicate> CROOK_BLOCK_PREDICATE = BlockPredicateComponent.BLOCK_PREDICATE.key("block_predicate", ComponentRole.INPUT);
     RecipeKey<Float> CROOK_CHANCE = NumberComponent.FLOAT.key("chance", ComponentRole.OTHER).optional(1F);
 
@@ -107,13 +107,13 @@ public interface ExDeorumSchemas {
         .factory(blockPredicate("crucible_heat_source", HEAT_BLOCK_PREDICATE))
         .constructor(HEAT_BLOCK_PREDICATE, HEAT_VALUE);
 
-    RecipeKey<FluidStack> LAVA_CRUCIBLE_FLUID = FluidStackComponent.FLUID_STACK.key("fluid", ComponentRole.OUTPUT);
+    RecipeKey<FluidStackTemplate> LAVA_CRUCIBLE_FLUID = FluidStackTemplateComponent.FLUID_STACK_TEMPLATE.key("fluid", ComponentRole.OUTPUT);
     RecipeKey<Ingredient> LAVA_CRUCIBLE_INGREDIENT = IngredientComponent.INGREDIENT.key("ingredient", ComponentRole.INPUT);
 
     RecipeSchema LAVA_CRUCIBLE = new RecipeSchema(LAVA_CRUCIBLE_FLUID, LAVA_CRUCIBLE_INGREDIENT)
         .constructor(LAVA_CRUCIBLE_FLUID, LAVA_CRUCIBLE_INGREDIENT);
 
-    RecipeKey<FluidStack> WATER_CRUCIBLE_FLUID = FluidStackComponent.FLUID_STACK.key("fluid", ComponentRole.OUTPUT);
+    RecipeKey<FluidStackTemplate> WATER_CRUCIBLE_FLUID = FluidStackTemplateComponent.FLUID_STACK_TEMPLATE.key("fluid", ComponentRole.OUTPUT);
     RecipeKey<Ingredient> WATER_CRUCIBLE_INGREDIENT = IngredientComponent.INGREDIENT.key("ingredient", ComponentRole.INPUT);
 
     RecipeSchema WATER_CRUCIBLE = new RecipeSchema(WATER_CRUCIBLE_FLUID, WATER_CRUCIBLE_INGREDIENT)
@@ -125,16 +125,16 @@ public interface ExDeorumSchemas {
     RecipeSchema BARREL_COMPOST = new RecipeSchema(COMPOST_INGREDIENT, COMPOST_VOLUME)
         .constructor(COMPOST_INGREDIENT, COMPOST_VOLUME);
 
-    RecipeKey<ItemStack> MIXING_RESULT = ItemStackComponent.ITEM_STACK.key("result", ComponentRole.OUTPUT);
+    RecipeKey<ItemStackTemplate> MIXING_RESULT = ItemStackTemplateComponent.ITEM_STACK_TEMPLATE.key("result", ComponentRole.OUTPUT);
     RecipeKey<Ingredient> MIXING_INGREDIENT = IngredientComponent.INGREDIENT.key("ingredient", ComponentRole.INPUT);
-    RecipeKey<SizedFluidIngredient> MIXING_FLUID = SizedFluidIngredientComponent.FLAT.key("fluid", ComponentRole.INPUT);
+    RecipeKey<SizedFluidIngredient> MIXING_FLUID = SizedFluidIngredientComponent.SIZED_FLUID_INGREDIENT.key("fluid", ComponentRole.INPUT);
 
     RecipeSchema BARREL_MIXING = new RecipeSchema(MIXING_RESULT, MIXING_INGREDIENT, MIXING_FLUID)
         .constructor(MIXING_RESULT, MIXING_INGREDIENT, MIXING_FLUID)
         .uniqueId(MIXING_RESULT);
 
-    RecipeKey<ItemStack> FLUID_MIXING_RESULT = ItemStackComponent.ITEM_STACK.key("result", ComponentRole.OUTPUT);
-    RecipeKey<SizedFluidIngredient> FLUID_MIXING_BASE = SizedFluidIngredientComponent.FLAT.key("base_fluid", ComponentRole.INPUT);
+    RecipeKey<ItemStackTemplate> FLUID_MIXING_RESULT = ItemStackTemplateComponent.ITEM_STACK_TEMPLATE.key("result", ComponentRole.OUTPUT);
+    RecipeKey<SizedFluidIngredient> FLUID_MIXING_BASE = SizedFluidIngredientComponent.SIZED_FLUID_INGREDIENT.key("base_fluid", ComponentRole.INPUT);
     RecipeKey<FluidIngredient> FLUID_MIXING_ADDITIVE = FluidIngredientComponent.FLUID_INGREDIENT.key("additive_fluid", ComponentRole.INPUT);
     RecipeKey<Boolean> FLUID_MIXING_CONSUMES_ADDITIVE = BooleanComponent.BOOLEAN.key("consumes_additive", ComponentRole.OTHER).optional(Boolean.FALSE);
 

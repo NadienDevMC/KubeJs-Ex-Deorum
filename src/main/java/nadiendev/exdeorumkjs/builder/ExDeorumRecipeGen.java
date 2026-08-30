@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import nadiendev.exdeorumkjs.ExDeorumKJS;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.Map;
 
 public final class ExDeorumRecipeGen {
     public interface Source {
-        void generateRecipes(Map<ResourceLocation, JsonElement> out);
+        void generateRecipes(Map<Identifier, JsonElement> out);
     }
 
     private static final List<Source> SOURCES = new ArrayList<>();
@@ -24,7 +24,7 @@ public final class ExDeorumRecipeGen {
         SOURCES.add(source);
     }
 
-    public static void injectInto(Map<ResourceLocation, JsonElement> recipes) {
+    public static void injectInto(Map<Identifier, JsonElement> recipes) {
         for (Source source : SOURCES) {
             try {
                 source.generateRecipes(recipes);
@@ -34,8 +34,8 @@ public final class ExDeorumRecipeGen {
         }
     }
 
-    public static ResourceLocation recipeId(ResourceLocation item, String suffix) {
-        return ResourceLocation.fromNamespaceAndPath(ExDeorumKJS.MOD_ID, item.getNamespace() + "/" + item.getPath() + suffix);
+    public static Identifier recipeId(Identifier item, String suffix) {
+        return Identifier.fromNamespaceAndPath(ExDeorumKJS.MOD_ID, item.getNamespace() + "/" + item.getPath() + suffix);
     }
 
     /**
@@ -54,7 +54,7 @@ public final class ExDeorumRecipeGen {
         return json;
     }
 
-    public static JsonObject shaped(String category, JsonObject key, List<String> pattern, ResourceLocation result) {
+    public static JsonObject shaped(String category, JsonObject key, List<String> pattern, Identifier result) {
         JsonObject json = new JsonObject();
         json.addProperty("type", "minecraft:crafting_shaped");
         json.addProperty("category", category);

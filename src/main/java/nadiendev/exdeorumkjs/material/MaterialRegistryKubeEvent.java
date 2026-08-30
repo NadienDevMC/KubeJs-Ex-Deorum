@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import nadiendev.exdeorumkjs.ExDeorumKJS;
 import thedarkcolour.exdeorum.material.AbstractMaterial;
@@ -45,7 +45,7 @@ public class MaterialRegistryKubeEvent implements KubeEvent {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Object create(String name) {
         if (itemKind != null) {
-            ResourceLocation id = name.indexOf(58) >= 0 ? ResourceLocation.parse(name) : ResourceLocation.fromNamespaceAndPath("kubejs", name);
+            Identifier id = name.indexOf(58) >= 0 ? Identifier.parse(name) : Identifier.fromNamespaceAndPath("kubejs", name);
             ItemBuilder builder = itemKind.create(id);
             builder.registryKey = Registries.ITEM;
 

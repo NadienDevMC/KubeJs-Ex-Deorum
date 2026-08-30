@@ -3,8 +3,8 @@ package nadiendev.exdeorumkjs.material;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import nadiendev.exdeorumkjs.builder.ExDeorumRecipeGen;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public final class MaterialRecipeGen {
     }
 
     @Nullable
-    public static JsonObject build(MaterialKind kind, MaterialBuilder builder, ResourceLocation block) {
+    public static JsonObject build(MaterialKind kind, MaterialBuilder builder, Identifier block) {
         // A compressed sieve uses an ingot in the middle instead of a slab, so it needs no slab.
         if (builder.craftMain == null || (builder.craftSlab == null && kind != MaterialKind.COMPRESSED_SIEVE)) {
             return null;

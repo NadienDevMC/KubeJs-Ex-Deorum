@@ -1,8 +1,8 @@
 plugins {
-    id 'net.neoforged.gradle.userdev' version '7.0.171'
     id 'java-library'
     id 'maven-publish'
     id 'idea'
+    id 'net.neoforged.moddev' version "${mdg_version}"
 }
 
 version = minecraft_version + "-" + mod_version + "-" + tag_lanzador
@@ -12,51 +12,26 @@ base {
     archivesName = mod_named
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
-
-runs {
-    configureEach {
-        workingDirectory project.file('run')
-
-        systemProperty 'forge.logging.markers', 'REGISTRIES'
-        systemProperty 'forge.logging.console.level', 'debug'
-
-        modSource sourceSets.main
-    }
-
-    client {
-        systemProperty 'forge.enabledGameTestNamespaces', mod_id
-    }
-
-    server {
-        systemProperty 'forge.enabledGameTestNamespaces', mod_id
-        programArgument '--nogui'
-    }
-
-    gameTestServer {
-        systemProperty 'forge.enabledGameTestNamespaces', mod_id
-    }
-
-    data {
-        workingDirectory project.file('run-data')
-
-        programArguments.addAll '--mod', mod_id,
-                                '--all',
-                                '--output', file('src/generated/resources/').getAbsolutePath(),
-                                '--existing', file('src/main/resources/').getAbsolutePath()
-    }
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
 }
-
-sourceSets.main.resources { srcDir 'src/generated/resources' exclude '.cache' }
 
 repositories {
     mavenLocal()
+    mavenCentral()
     maven {
-        name = "Jared's maven"
-        url = "https://maven.blamejared.com/" // JEI
+        name = 'NeoForged'
+        url = 'https://maven.neoforged.net/releases'
     }
     maven {
-        name = 'KubeJS'
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com/'
+        content {
+            includeGroup 'mezz.jei'
+        }
+    }
+    maven {
+        name = 'Latvian.dev'
         url = 'https://maven.latvian.dev/releases'
         content {
             includeGroup 'dev.latvian.mods'
@@ -64,30 +39,64 @@ repositories {
         }
     }
     maven {
+        name = 'Latvian.dev mirror'
+        url = 'https://maven.latvian.dev/mirror'
+        content {
+            includeGroup 'com.github.rtyley'
+        }
+    }
+    maven {
         name = 'Modrinth'
         url = 'https://api.modrinth.com/maven'
-        content { includeGroup 'maven.modrinth' }
+        content {
+            includeGroup 'maven.modrinth'
+        }
     }
-    maven { url = 'https://jitpack.io' }
+}
+
+neoForge {
+    version = neo_version
+
+    parchment {
+        minecraftVersion = project.'neogradle.subsystems.parchment.minecraftVersion'
+        mappingsVersion = project.'neogradle.subsystems.parchment.mappingsVersion'
+    }
+
+    runs {
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+        }
+
+        configureEach {
+            gameDirectory = project.file('run')
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
 }
 
 dependencies {
-    // NeoForge
-    implementation "net.neoforged:neoforge:${neo_version}"
-
-    // KubeJS
     implementation "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
-    implementation "dev.latvian.mods:rhino:${rhino_version}"
+    implementation("dev.latvian.mods:rhino:${rhino_version}") { transitive = false }
 
-    // Ex Deorum
     implementation("maven.modrinth:ex-deorum:${exdeorum_version}") { transitive = false }
 
-    // Just Enough Items (JEI)
-    compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
-    runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 }
 
-tasks.withType(ProcessResources).configureEach {
+tasks.named('processResources', ProcessResources).configure {
     var replaceProperties = [
             minecraft_version      : minecraft_version,
             minecraft_version_range: minecraft_version_range,
@@ -101,7 +110,6 @@ tasks.withType(ProcessResources).configureEach {
             mod_authors            : mod_authors,
             mod_description        : mod_description,
             issue_tracker          : issue_tracker,
-            jei_version            : jei_version,
             kubejs_version         : kubejs_version,
             kubejs_version_range   : kubejs_version_range,
             exdeorum_version       : exdeorum_version,
@@ -130,6 +138,7 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+    options.release = 25
     options.compilerArgs << '-Xlint:none'
     options.warnings = false
 }

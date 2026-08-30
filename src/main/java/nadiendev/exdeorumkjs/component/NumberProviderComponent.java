@@ -9,13 +9,15 @@ import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import nadiendev.exdeorumkjs.ExDeorumKJS;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
+import org.jspecify.annotations.Nullable;
 
-public record NumberProviderComponent(RecipeComponentType<?> type) implements RecipeComponent<NumberProvider> {
-    public static final RecipeComponentType<NumberProvider> NUMBER_PROVIDER =
-        RecipeComponentType.unit(ExDeorumKJS.id("number_provider"), NumberProviderComponent::new);
+public record NumberProviderComponent(ResourceKey<RecipeComponentType<?>> type) implements RecipeComponent<NumberProvider> {
+    public static final NumberProviderComponent NUMBER_PROVIDER =
+        new NumberProviderComponent(RecipeComponentType.key(ExDeorumKJS.id("number_provider")));
 
     @Override
     public Codec<NumberProvider> codec() {
@@ -28,7 +30,7 @@ public record NumberProviderComponent(RecipeComponentType<?> type) implements Re
     }
 
     @Override
-    public NumberProvider wrap(RecipeScriptContext cx, Object from) {
+    public NumberProvider wrap(RecipeScriptContext cx, @Nullable Object from) {
         if (from instanceof NumberProvider provider) {
             return provider;
         }
@@ -53,6 +55,6 @@ public record NumberProviderComponent(RecipeComponentType<?> type) implements Re
 
     @Override
     public String toString() {
-        return type.toString();
+        return type.identifier().toString();
     }
 }

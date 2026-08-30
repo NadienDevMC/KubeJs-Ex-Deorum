@@ -1,6 +1,6 @@
 package nadiendev.exdeorumkjs;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public final class ExDeorumKJS {
     public static final String MOD_ID = "exdeorumkjs";
@@ -10,11 +10,11 @@ public final class ExDeorumKJS {
     private ExDeorumKJS() {
     }
 
-    public static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
-    public static ResourceLocation exdeorum(String path) {
-        return ResourceLocation.fromNamespaceAndPath(EXDEORUM_ID, path);
+    public static Identifier exdeorum(String path) {
+        return Identifier.fromNamespaceAndPath(EXDEORUM_ID, path);
     }
 }

@@ -11,15 +11,22 @@ import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import nadiendev.exdeorumkjs.ExDeorumKJS;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import org.jspecify.annotations.Nullable;
 
-public record FluidComponent(RecipeComponentType<?> type) implements RecipeComponent<Fluid> {
-    public static final RecipeComponentType<Fluid> FLUID =
-        RecipeComponentType.unit(ExDeorumKJS.id("fluid"), FluidComponent::new);
+import java.util.List;
+
+public record FluidComponent(ResourceKey<RecipeComponentType<?>> type) implements RecipeComponent<Fluid> {
+    public static final FluidComponent FLUID =
+        new FluidComponent(RecipeComponentType.key(ExDeorumKJS.id("fluid")));
 
     @Override
     public Codec<Fluid> codec() {
@@ -32,7 +39,7 @@ public record FluidComponent(RecipeComponentType<?> type) implements RecipeCompo
     }
 
     @Override
-    public Fluid wrap(RecipeScriptContext cx, Object from) {
+    public Fluid wrap(RecipeScriptContext cx, @Nullable Object from) {
         if (from instanceof Fluid fluid) {
             return fluid;
         }
@@ -41,11 +48,15 @@ public record FluidComponent(RecipeComponentType<?> type) implements RecipeCompo
             return stack.getFluid();
         }
 
-        if (from instanceof SizedFluidIngredient sized) {
-            FluidStack[] stacks = sized.ingredient().getStacks();
+        if (from instanceof FluidStackTemplate template) {
+            return template.fluid().value();
+        }
 
-            if (stacks.length > 0) {
-                return stacks[0].getFluid();
+        if (from instanceof SizedFluidIngredient sized) {
+            List<Holder<Fluid>> fluids = sized.ingredient().fluids();
+
+            if (!fluids.isEmpty()) {
+                return fluids.getFirst().value();
             }
         }
 
@@ -67,10 +78,10 @@ public record FluidComponent(RecipeComponentType<?> type) implements RecipeCompo
     }
 
     private static Fluid byId(String id) {
-        ResourceLocation location = ResourceLocation.parse(id);
-        Fluid fluid = BuiltInRegistries.FLUID.get(location);
+        Identifier location = Identifier.parse(id);
+        Fluid fluid = BuiltInRegistries.FLUID.getValue(location);
 
-        if (fluid == null || (fluid == net.minecraft.world.level.material.Fluids.EMPTY && !location.equals(ResourceLocation.withDefaultNamespace("empty")))) {
+        if (fluid == null || (fluid == Fluids.EMPTY && !location.equals(Identifier.withDefaultNamespace("empty")))) {
             throw new IllegalArgumentException("Unknown fluid '" + id + "'");
         }
 
@@ -84,6 +95,6 @@ public record FluidComponent(RecipeComponentType<?> type) implements RecipeCompo
 
     @Override
     public String toString() {
-        return type.toString();
+        return type.identifier().toString();
     }
 }

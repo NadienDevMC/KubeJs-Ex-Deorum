@@ -4,8 +4,8 @@ import dev.latvian.mods.kubejs.item.ItemBuilder;
 import nadiendev.exdeorumkjs.builder.HammerItemBuilder;
 import nadiendev.exdeorumkjs.builder.MeshItemBuilder;
 import nadiendev.exdeorumkjs.builder.OreChunkItemBuilder;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -16,14 +16,14 @@ public enum ItemKind {
     ORE_CHUNK("ore_chunk", OreChunkItemBuilder::new);
 
     public final String id;
-    private final Function<ResourceLocation, ? extends ItemBuilder> factory;
+    private final Function<Identifier, ? extends ItemBuilder> factory;
 
-    ItemKind(String id, Function<ResourceLocation, ? extends ItemBuilder> factory) {
+    ItemKind(String id, Function<Identifier, ? extends ItemBuilder> factory) {
         this.id = id;
         this.factory = factory;
     }
 
-    public ItemBuilder create(ResourceLocation id) {
+    public ItemBuilder create(Identifier id) {
         return factory.apply(id);
     }
 

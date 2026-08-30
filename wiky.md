@@ -8,10 +8,12 @@ one working example of every recipe type lives in [`examples/exdeorum_examples.j
 (and in `run/kubejs/server_scripts/` for the dev environment) — none of those recipes exist in
 Ex Deorum, so dropping the file in adds new content rather than overwriting anything.
 
-> **Why this addon?** Ex Deorum ships a built-in KubeJS schema for `exdeorum:sieve`, but it only
-> knows about `result` and `ingredient` — it has no `mesh` and no `result_amount`, so it cannot
-> produce a valid sieve recipe. This addon replaces that schema with a complete one and adds the
-> twelve recipe types Ex Deorum does not expose at all.
+> **Why this addon?** Ex Deorum 4.0 for 26.1.2 ships no KubeJS integration at all — its
+> `kubejs.plugins.txt` points at a class that is not in the jar, so KubeJS logs an error and skips
+> it. Without this addon none of Ex Deorum's thirteen recipe types can be created from a script.
+> This addon registers all thirteen. (On builds that *do* ship Ex Deorum's own minimal
+> `exdeorum:sieve` schema — `result` and `ingredient` only, no `mesh`, no `result_amount` — this
+> addon replaces it with a complete one.)
 
 ---
 
@@ -425,18 +427,17 @@ event.remove({ type: 'exdeorum:hammer', output: 'minecraft:gravel' })
 event.remove({ type: 'exdeorum:barrel_compost', input: 'minecraft:rotten_flesh' })
 ```
 
-Ex Deorum itself also provides two shortcuts through its own `exdeorum` binding:
+To wipe a whole machine's recipe list before adding your own:
 
 ```javascript
-exdeorum.removeDefaultSieveRecipes(event)
-exdeorum.removeDefaultHeatSources()
+event.remove({ type: 'exdeorum:sieve' })
+event.remove({ type: 'exdeorum:compressed_sieve' })
+event.remove({ type: 'exdeorum:crucible_heat_source' })
 ```
 
-And it lets you filter sieve recipes by mesh:
-
-```javascript
-event.remove({ type: 'exdeorum:sieve', mesh: 'exdeorum:string_mesh' })
-```
+> On 26.1.2 Ex Deorum ships no KubeJS integration of its own, so the `exdeorum` script binding and
+> its `mesh:` recipe filter (both present on 1.21.1) do not exist here. Remove sieve recipes by
+> `type`, `input` or `output` instead.
 
 ---
 

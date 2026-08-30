@@ -13,15 +13,17 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import nadiendev.exdeorumkjs.ExDeorumKJS;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jspecify.annotations.Nullable;
 import thedarkcolour.exdeorum.recipe.BlockPredicate;
 
-public record BlockPredicateComponent(RecipeComponentType<?> type) implements RecipeComponent<BlockPredicate> {
-    public static final RecipeComponentType<BlockPredicate> BLOCK_PREDICATE =
-        RecipeComponentType.unit(ExDeorumKJS.id("block_predicate"), BlockPredicateComponent::new);
+public record BlockPredicateComponent(ResourceKey<RecipeComponentType<?>> type) implements RecipeComponent<BlockPredicate> {
+    public static final BlockPredicateComponent BLOCK_PREDICATE =
+        new BlockPredicateComponent(RecipeComponentType.key(ExDeorumKJS.id("block_predicate")));
 
     @Override
     public Codec<BlockPredicate> codec() {
@@ -34,7 +36,7 @@ public record BlockPredicateComponent(RecipeComponentType<?> type) implements Re
     }
 
     @Override
-    public BlockPredicate wrap(RecipeScriptContext cx, Object from) {
+    public BlockPredicate wrap(RecipeScriptContext cx, @Nullable Object from) {
         if (from instanceof BlockPredicate predicate) {
             return predicate;
         }
@@ -99,11 +101,11 @@ public record BlockPredicateComponent(RecipeComponentType<?> type) implements Re
         String trimmed = value.trim();
 
         if (trimmed.startsWith("#")) {
-            return BlockPredicate.blockTag(TagKey.create(Registries.BLOCK, ResourceLocation.parse(trimmed.substring(1))));
+            return BlockPredicate.blockTag(TagKey.create(Registries.BLOCK, Identifier.parse(trimmed.substring(1))));
         }
 
         if (trimmed.indexOf('[') < 0) {
-            return BlockPredicate.singleBlock(BuiltInRegistries.BLOCK.get(ResourceLocation.parse(trimmed)));
+            return BlockPredicate.singleBlock(BuiltInRegistries.BLOCK.getValue(Identifier.parse(trimmed)));
         }
 
         return BlockPredicate.CODEC.parse(JsonOps.INSTANCE, fromString(trimmed)).getOrThrow();
@@ -116,6 +118,6 @@ public record BlockPredicateComponent(RecipeComponentType<?> type) implements Re
 
     @Override
     public String toString() {
-        return type.toString();
+        return type.identifier().toString();
     }
 }

@@ -3,8 +3,8 @@ package nadiendev.exdeorumkjs;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
-import dev.latvian.mods.kubejs.recipe.component.RecipeComponentTypeRegistry;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentTypeRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
@@ -12,13 +12,14 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
-import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import nadiendev.exdeorumkjs.builder.ExDeorumRecipeGen;
 import nadiendev.exdeorumkjs.builder.HammerItemBuilder;
 import nadiendev.exdeorumkjs.builder.MeshItemBuilder;
 import nadiendev.exdeorumkjs.builder.OreChunkItemBuilder;
 import nadiendev.exdeorumkjs.component.BlockPredicateComponent;
 import nadiendev.exdeorumkjs.component.FluidComponent;
+import nadiendev.exdeorumkjs.component.FluidStackTemplateComponent;
+import nadiendev.exdeorumkjs.component.ItemStackTemplateComponent;
 import nadiendev.exdeorumkjs.component.NumberProviderComponent;
 import nadiendev.exdeorumkjs.component.WeightedBlockStatesComponent;
 import nadiendev.exdeorumkjs.material.ExDeorumEvents;
@@ -38,7 +39,7 @@ import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import thedarkcolour.exdeorum.material.AbstractMaterial;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -92,7 +93,7 @@ public class ExDeorumKubeJSPlugin implements KubeJSPlugin {
             AbstractMaterial material = entry.material();
 
             try {
-                ResourceLocation id = BuiltInRegistries.BLOCK.getKey(material.getBlock());
+                Identifier id = BuiltInRegistries.BLOCK.getKey(material.getBlock());
 
                 JsonObject recipe = MaterialRecipeGen.build(entry.kind(), entry.builder(), id);
 
@@ -110,7 +111,7 @@ public class ExDeorumKubeJSPlugin implements KubeJSPlugin {
                         .add(LootItem.lootTableItem(material.getItem())))
                     .build();
 
-                generator.json(id.withPath(ID.BLOCK_LOOT_TABLE), generator.getRegistries().json().withEncoder(LootTable.CODEC).apply(new Holder.Direct<>(table)).getOrThrow());
+                generator.json(id.withPath(ID.BLOCK_LOOT_TABLE), generator.getRegistries().json().withEncoder(LootTable.CODEC).apply(Holder.direct(table)).getOrThrow());
             } catch (Exception ex) {
                 ExDeorumKJS.LOGGER.error("Failed to generate a loot table for a custom Ex Deorum material", ex);
             }
@@ -122,9 +123,9 @@ public class ExDeorumKubeJSPlugin implements KubeJSPlugin {
             tag.add("values", entry.getValue());
 
             String tool = entry.getKey();
-            ResourceLocation tagId = tool.indexOf(58) >= 0
-                ? ResourceLocation.parse(tool)
-                : ResourceLocation.withDefaultNamespace("mineable/" + tool);
+            Identifier tagId = tool.indexOf(58) >= 0
+                ? Identifier.parse(tool)
+                : Identifier.withDefaultNamespace("mineable/" + tool);
 
             generator.json(tagId.withPath(s -> "tags/block/" + s), tag);
         }
@@ -132,10 +133,12 @@ public class ExDeorumKubeJSPlugin implements KubeJSPlugin {
 
     @Override
     public void registerRecipeComponents(RecipeComponentTypeRegistry registry) {
-        registry.register(NumberProviderComponent.NUMBER_PROVIDER);
-        registry.register(BlockPredicateComponent.BLOCK_PREDICATE);
-        registry.register(FluidComponent.FLUID);
-        registry.register(WeightedBlockStatesComponent.WEIGHTED_BLOCK_STATES);
+        registry.unit(NumberProviderComponent.NUMBER_PROVIDER);
+        registry.unit(BlockPredicateComponent.BLOCK_PREDICATE);
+        registry.unit(FluidComponent.FLUID);
+        registry.unit(ItemStackTemplateComponent.ITEM_STACK_TEMPLATE);
+        registry.unit(FluidStackTemplateComponent.FLUID_STACK_TEMPLATE);
+        registry.unit(WeightedBlockStatesComponent.WEIGHTED_BLOCK_STATES);
     }
 
     @Override
@@ -158,13 +161,13 @@ public class ExDeorumKubeJSPlugin implements KubeJSPlugin {
     }
 
     /**
-     * Ex Deorum ships its own minimal {@code exdeorum:sieve} schema that only knows about
-     * {@code result} and {@code ingredient}, which cannot produce a valid sieve recipe.
+     * Some Ex Deorum builds ship their own minimal {@code exdeorum:sieve} schema that only knows
+     * about {@code result} and {@code ingredient}, which cannot produce a valid sieve recipe.
      * Whichever plugin registers last wins, and the mod file order is not guaranteed, so the
      * complete schema is re-asserted here once every plugin has registered.
      */
     @Override
-    public void beforeRecipeLoading(RecipesKubeEvent event, RecipeManagerKJS manager, Map<ResourceLocation, JsonElement> recipeJsons) {
+    public void beforeRecipeLoading(RecipesKubeEvent event, Map<Identifier, JsonElement> recipeJsons) {
         ExDeorumRecipeGen.injectInto(recipeJsons);
 
         RecipeNamespace namespace = event.recipeSchemaStorage.namespace(ExDeorumKJS.EXDEORUM_ID);
