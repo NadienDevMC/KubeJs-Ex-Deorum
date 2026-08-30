@@ -1,0 +1,142 @@
+plugins {
+    id 'net.neoforged.gradle.userdev' version '7.0.171'
+    id 'java-library'
+    id 'maven-publish'
+    id 'idea'
+}
+
+version = minecraft_version + "-" + mod_version + "-" + tag_lanzador
+group = mod_group_id
+
+base {
+    archivesName = mod_named
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+runs {
+    configureEach {
+        workingDirectory project.file('run')
+
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+        systemProperty 'forge.logging.console.level', 'debug'
+
+        modSource sourceSets.main
+    }
+
+    client {
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+    }
+
+    server {
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+        programArgument '--nogui'
+    }
+
+    gameTestServer {
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+    }
+
+    data {
+        workingDirectory project.file('run-data')
+
+        programArguments.addAll '--mod', mod_id,
+                                '--all',
+                                '--output', file('src/generated/resources/').getAbsolutePath(),
+                                '--existing', file('src/main/resources/').getAbsolutePath()
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' exclude '.cache' }
+
+repositories {
+    mavenLocal()
+    maven {
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/" // JEI
+    }
+    maven {
+        name = 'KubeJS'
+        url = 'https://maven.latvian.dev/releases'
+        content {
+            includeGroup 'dev.latvian.mods'
+            includeGroup 'dev.latvian.apps'
+        }
+    }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content { includeGroup 'maven.modrinth' }
+    }
+    maven { url = 'https://jitpack.io' }
+}
+
+dependencies {
+    // NeoForge
+    implementation "net.neoforged:neoforge:${neo_version}"
+
+    // KubeJS
+    implementation "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
+    implementation "dev.latvian.mods:rhino:${rhino_version}"
+
+    // Ex Deorum
+    implementation("maven.modrinth:ex-deorum:${exdeorum_version}") { transitive = false }
+
+    // Just Enough Items (JEI)
+    compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
+    runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+}
+
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description,
+            issue_tracker          : issue_tracker,
+            jei_version            : jei_version,
+            kubejs_version         : kubejs_version,
+            kubejs_version_range   : kubejs_version_range,
+            exdeorum_version       : exdeorum_version,
+            exdeorum_version_range : exdeorum_version_range,
+    ]
+
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
+    }
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-Xlint:none'
+    options.warnings = false
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
