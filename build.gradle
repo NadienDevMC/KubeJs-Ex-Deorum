@@ -5,7 +5,7 @@ plugins {
     id 'net.neoforged.moddev.legacyforge' version '2.0.80'
 }
 
-version = mod_version + "-" + tag_lanzador
+version = minecraft_version + "-" + mod_version + "-" + tag_lanzador
 group = mod_group_id
 
 base {
