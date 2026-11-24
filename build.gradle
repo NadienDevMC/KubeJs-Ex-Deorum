@@ -1,0 +1,153 @@
+plugins {
+    id 'idea'
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev.legacyforge' version '2.0.80'
+}
+
+version = mod_version + "-" + tag_lanzador
+group = mod_group_id
+
+base {
+    archivesName = mod_named
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+legacyForge {
+    version = "${minecraft_version}-${forge_version}"
+
+    parchment {
+        minecraftVersion = parchment_minecraft_version
+        mappingsVersion = parchment_mappings
+    }
+
+    runs {
+        client {
+            client()
+            gameDirectory.set(project.layout.projectDirectory.dir('run'))
+        }
+
+        server {
+            server()
+            gameDirectory.set(project.layout.projectDirectory.dir('run/server'))
+            programArgument '--nogui'
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' exclude '.cache' }
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'jei'
+        url = 'https://maven.blamejared.com/'
+        content { includeGroup 'mezz.jei' }
+    }
+    // KubeJS and Rhino
+    maven {
+        name = 'KubeJS and Rhino'
+        url = 'https://maven.latvian.dev/releases'
+        content { includeGroupAndSubgroups 'dev.latvian' }
+    }
+    maven {
+        name = 'Architectury API'
+        url = 'https://maven.architectury.dev'
+        content { includeGroup 'dev.architectury' }
+    }
+    // Ex Deorum (no official maven)
+    maven {
+        name = 'CurseMaven'
+        url = 'https://cursemaven.com'
+        content { includeGroup 'curse.maven' }
+    }
+}
+
+dependencies {
+    // Forge
+    // (provided by the legacyForge block above)
+
+    // jei
+    modCompileOnly("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
+    modCompileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+
+    // architectury (required by kubejs)
+    modImplementation("dev.architectury:architectury-forge:${architectury_version}")
+
+    // rhino
+    modImplementation("dev.latvian.mods:rhino-forge:${rhino_version}")
+
+    // kubejs
+    modImplementation("dev.latvian.mods:kubejs-forge:${kubejs_version}")
+
+    // ex deorum
+    modImplementation("curse.maven:ex-deorum-${exdeorum_id}:${exdeorum_file_id}")
+}
+
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            minecraft_version : minecraft_version,
+            forge_version     : forge_version,
+            loader_version    : loader_version,
+            mod_id            : mod_id,
+            mod_name          : mod_name,
+            mod_license       : mod_license,
+            mod_version       : mod_version,
+            mod_authors       : mod_authors,
+            mod_description   : mod_description,
+            issue_tracker     : issue_tracker,
+            kubejs_version    : kubejs_version,
+            exdeorum_version  : exdeorum_version,
+    ]
+
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml']) {
+        expand replaceProperties
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title"   : mod_id,
+                "Specification-Version" : "1",
+                "Implementation-Title"  : project.name,
+                "Implementation-Version": version
+        ])
+    }
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-Xlint:none'
+    options.warnings = false
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
