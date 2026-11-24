@@ -105,7 +105,7 @@ jobs:
             --arg mc "$MC" \
             --argjson relations "$relations" \
             '{changelog: $changelog, changelogType: "markdown", releaseType: $type, displayName: $name,
-              gameVersionNames: [$mc, "Forge", "Java 17", "Client", "Server"],
+              gameVersionNames: [$mc, "Forge", "NeoForge", "Java 17", "Client", "Server"],
               relations: {projects: $relations}}')
 
           echo "Uploading $jar to CurseForge as a $RELEASE_TYPE for Forge $MC"
