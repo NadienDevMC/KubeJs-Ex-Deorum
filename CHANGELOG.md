@@ -1,5 +1,17 @@
 # ⚡ Ex Deorum KJS — Changelog
 
+## 🚀 [2001.1.0.1-1.20.1] 23/11/2026 20:41
+
+
+### Additions
+
+### Fixes
+
+### Changes
+modified jar name
+### Lineas de codigo cambiadas
+
+
 ## 🚀 [2001.1.0-1.20.1] 23/11/2026 20:41
 
 Initial 1.20.1 Release
